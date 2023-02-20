@@ -1,0 +1,42 @@
+[project]
+name = "Test search operational monitoring project"
+platform = "firefox_desktop"
+xaxis = "submission_date"
+start_date = "2023-01-01"
+skip = false
+is_rollout = false
+skip_default_metrics = false
+compact_visualization = false
+
+# Metrics, that are based on metrics, to compute.
+# Defined as a list of strings. These strings are the "slug" of the metric, which is the
+# name of the metric definition section in either the project configuration or the platform-specific
+# configuration file.
+# See [metrics] section on how these metrics get defined.
+metrics = [
+    'shutdown_hangs',
+    'main_crashes',
+    'startup_crashes',
+    'memory_unique_content_startup',
+    'perf_page_load_time_ms'
+]
+
+alerts = [
+    "ci_diffs"
+]
+
+# This section specifies the clients that should be monitored.
+[project.population]
+data_source = "main"
+channel = "release"
+monitor_entire_population = true
+dimensions = ["os"]
+
+# A set of metrics that should be part of the the same visualization
+[project.metric_groups.crashes]
+friendly_name = "Crashes"
+description = "Breakdown of crashes"
+metrics = [
+    "main_crashes",
+    "startup_crashes",
+]
