@@ -1,79 +1,46 @@
 [project]
 name = "Test search operational monitoring project"
 platform = "firefox_desktop"
-xaxis = "build_id"
+xaxis = "submission_date"
+is_rollout = false
 compact_visualization = true
 skip_default_metrics = true
 start_date = "2023-01-01"
 alerts = [
-    "hist_diff",
-    "crash_thresholds"
+    "hist_diff"
 ]
+
+# need to come back to this once I know the metrics we're working with
 metrics = [
-    "checkerboard_severity",
-    "gc_ms",
-    "main_crashes",
-    "oom_crashes",
-    "js_pageload_execution_ms",
-    "memory_total",
-    "gc_ms_content",
-    "gc_budget_overrun",
-    "perf_first_contentful_paint_ms",
-    "active_ticks",
-    "subsession_length"
+    "main_google_adclicks"
 ]
 
 
 [project.population]
 data_source = "main"
 monitor_entire_population = true
-dimensions = ["os"]
-channel = "nightly"
+channel = "release"
 
+[metrics.main_google_adclicks]
+data_source = "main"
+select_expression = "SUM(ad_click) WHERE normalized_engine in ('Google')"
 
-[metrics.main_crashes]
-data_source = "crash"
-select_expression = "SUM(IF(payload.process_type = 'main' OR payload.process_type IS NULL, 1, 0))"
-
-[metrics.main_crashes.statistics]
+[metrics.main_google_adclicks.statistics]
 sum = {}
-
-[metrics.oom_crashes]
-data_source = "crash"
-select_expression = "SUM(IF(payload.metadata.oom_allocation_size IS NOT NULL, 1, 0))"
-
-[metrics.oom_crashes.statistics]
-sum = {}
+avg_diff = {}
 
 [data_sources]
 
 [data_sources.main]
 from_expression = "search.search_clients_engines_sources_daily"
-submission_date_column = "DATE(submission_timestamp)"
+submission_date_column = "DATE(submission_date)"
 
 [alerts]
-
-[alerts.crash_thresholds]
-type = "threshold"
-metrics = [
-    "main_crashes",
-    "oom_crashes"
-]
-min = [0]
-max = [500]
 
 [alerts.hist_diff]
 type = "avg_diff"
 metrics = [
-    "checkerboard_severity",
-    "gc_ms",
-    "js_pageload_execution_ms",
-    "memory_total",
-    "gc_ms_content",
-    "gc_budget_overrun",
-    "perf_first_contentful_paint_ms",
-    "active_ticks",
-    "subsession_length"
+    "main_google_adclicks"
 ]
 window_size = 7
 max_relative_change = 0.25
