@@ -1,42 +1,80 @@
 [project]
 name = "Test search operational monitoring project"
 platform = "firefox_desktop"
-xaxis = "submission_date"
+xaxis = "build_id"
+compact_visualization = true
+skip_default_metrics = true
 start_date = "2023-01-01"
-skip = false
-is_rollout = false
-skip_default_metrics = false
-compact_visualization = false
-
-# Metrics, that are based on metrics, to compute.
-# Defined as a list of strings. These strings are the "slug" of the metric, which is the
-# name of the metric definition section in either the project configuration or the platform-specific
-# configuration file.
-# See [metrics] section on how these metrics get defined.
-metrics = [
-    'shutdown_hangs',
-    'main_crashes',
-    'startup_crashes',
-    'memory_unique_content_startup',
-    'perf_page_load_time_ms'
-]
-
 alerts = [
-    "ci_diffs"
+    "hist_diff",
+    "crash_thresholds"
+]
+metrics = [
+    "checkerboard_severity",
+    "gc_ms",
+    "main_crashes",
+    "oom_crashes",
+    "js_pageload_execution_ms",
+    "memory_total",
+    "gc_ms_content",
+    "gc_budget_overrun",
+    "perf_first_contentful_paint_ms",
+    "active_ticks",
+    "subsession_length"
 ]
 
-# This section specifies the clients that should be monitored.
+
 [project.population]
 data_source = "main"
-channel = "release"
 monitor_entire_population = true
 dimensions = ["os"]
+channel = "nightly"
 
-# A set of metrics that should be part of the the same visualization
-[project.metric_groups.crashes]
-friendly_name = "Crashes"
-description = "Breakdown of crashes"
+
+[metrics.main_crashes]
+data_source = "crash"
+select_expression = "SUM(IF(payload.process_type = 'main' OR payload.process_type IS NULL, 1, 0))"
+
+[metrics.main_crashes.statistics]
+sum = {}
+
+[metrics.oom_crashes]
+data_source = "crash"
+select_expression = "SUM(IF(payload.metadata.oom_allocation_size IS NOT NULL, 1, 0))"
+
+[metrics.oom_crashes.statistics]
+sum = {}
+
+[data_sources]
+
+[data_sources.main]
+from_expression = "search.search_clients_engines_sources_daily"
+submission_date_column = "DATE(submission_timestamp)"
+
+[alerts]
+
+[alerts.crash_thresholds]
+type = "threshold"
 metrics = [
     "main_crashes",
-    "startup_crashes",
+    "oom_crashes"
 ]
+min = [0]
+max = [500]
+
+[alerts.hist_diff]
+type = "avg_diff"
+metrics = [
+    "checkerboard_severity",
+    "gc_ms",
+    "js_pageload_execution_ms",
+    "memory_total",
+    "gc_ms_content",
+    "gc_budget_overrun",
+    "perf_first_contentful_paint_ms",
+    "active_ticks",
+    "subsession_length"
+]
+window_size = 7
+max_relative_change = 0.25
+percentiles = [25, 50, 75, 95]
