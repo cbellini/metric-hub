@@ -23,11 +23,10 @@ channel = "release"
 
 [metrics.main_google_adclicks]
 data_source = "main"
-select_expression = "SUM(ad_click) WHERE normalized_engine in ('Google')"
+select_expression = "SUM(CASE WHEN normalized_engine = \"Google\" THEN ad_clicks ELSE 0 END)"
 
 [metrics.main_google_adclicks.statistics]
 sum = {}
-avg_diff = {}
 
 [data_sources]
 
