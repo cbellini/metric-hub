@@ -19,11 +19,11 @@ metrics = [
 [project.population]
 data_source = "main"
 monitor_entire_population = true
-channel = "release"
+#channel = "release"
 
 [metrics.main_google_adclicks]
 data_source = "main"
-select_expression = "SUM(CASE WHEN normalized_engine = \"Google\" THEN ad_clicks ELSE 0 END)"
+select_expression = "SUM(CASE WHEN normalized_engine = \"Google\" THEN ad_click ELSE 0 END)"
 
 [metrics.main_google_adclicks.statistics]
 sum = {}
