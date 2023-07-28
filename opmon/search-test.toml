@@ -3,8 +3,8 @@ name = "Test search operational monitoring project"
 platform = "firefox_desktop"
 xaxis = "submission_date"
 is_rollout = false
-compact_visualization = true
-skip_default_metrics = true
+compact_visualization = false
+skip_default_metrics = false
 start_date = "2023-01-01"
 alerts = ["adclick_threshold"]
 
@@ -20,6 +20,9 @@ monitor_entire_population = true
 [metrics.main_bing_adclicks]
 data_source = "main"
 select_expression = "SUM(CASE WHEN normalized_engine = \"Bing\" THEN ad_click ELSE 0 END)"
+type = "scalar"
+friendly_name = "Bing Ad Click Count"
+description = "Number of Bing Ad Clicks"
 
 [metrics.main_bing_adclicks.statistics]
 sum = {}
