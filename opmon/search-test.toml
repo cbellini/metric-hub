@@ -6,14 +6,10 @@ is_rollout = false
 compact_visualization = true
 skip_default_metrics = true
 start_date = "2023-01-01"
-alerts = [
-    "hist_diff"
-]
+alerts = ["adclick_threshold"]
 
 # need to come back to this once I know the metrics we're working with
-metrics = [
-    "main_google_adclicks"
-]
+metrics = ["main_bing_adclicks"]
 
 
 [project.population]
@@ -21,11 +17,11 @@ data_source = "main"
 monitor_entire_population = true
 #channel = "release"
 
-[metrics.main_google_adclicks]
+[metrics.main_bing_adclicks]
 data_source = "main"
-select_expression = "SUM(CASE WHEN normalized_engine = \"Google\" THEN ad_click ELSE 0 END)"
+select_expression = "SUM(CASE WHEN normalized_engine = \"Bing\" THEN ad_click ELSE 0 END)"
 
-[metrics.main_google_adclicks.statistics]
+[metrics.main_bing_adclicks.statistics]
 sum = {}
 
 [data_sources]
@@ -36,11 +32,8 @@ submission_date_column = "DATE(submission_date)"
 
 [alerts]
 
-[alerts.hist_diff]
-type = "avg_diff"
-metrics = [
-    "main_google_adclicks"
-]
-window_size = 7
-max_relative_change = 0.25
-percentiles = [25, 50, 75, 95]
+[alerts.adclick_threshold]
+type = "threshold"
+metrics = ["main_bing_adclicks"]
+min = [38000]
+max = [100000]
