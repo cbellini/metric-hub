@@ -15,7 +15,7 @@ metrics = ["main_bing_adclicks"]
 [project.population]
 data_source = "main"
 monitor_entire_population = true
-#channel = "release"
+#channel = "release" # commenting this out to work around issue: https://github.com/mozilla/opmon/issues/146
 
 [metrics.main_bing_adclicks]
 data_source = "main"
